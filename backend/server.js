@@ -99,6 +99,18 @@ app.delete("/api/favoritos", (req, res) => {
     }
   );
 });
+
+const path = require("path");
+
+// Servir archivos estáticos desde /frontend
+app.use(express.static(path.join(__dirname, "frontend")));
+
+// Redirigir "/" a index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
+
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

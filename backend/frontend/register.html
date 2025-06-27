@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - Movie Catalog</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="login-container">
+    <form class="login-box" id="registerForm">
+      <h2>Register</h2>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+      <button type="submit">Register</button>
+      <p style="margin-top: 10px; font-size: 14px;">
+        ¿Ya tienes cuenta?
+        <a href="login.html">Inicia sesión</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirmPassword").value;
+
+      if (password !== confirm) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Registro exitoso. Ahora puedes iniciar sesión.");
+        window.location.href = "login.html";
+      } else {
+        alert(data.error || "Error al registrar.");
+      }
+    });
+  </script>
+</body>
+</html>

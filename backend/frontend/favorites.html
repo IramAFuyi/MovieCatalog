@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>My Favorites</title>
+  <link rel="stylesheet" href="favorites.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <img src="logo.png" alt="Logo" class="logo">
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="profile.html">My Profile</a>
+      <a href="favorites.html">My Favorites</a>
+    </nav>
+    <button class="logout-btn" onclick="localStorage.clear(); window.location.href='login.html';">Logout</button>
+  </header>
+
+  <main class="main-content">
+    <aside class="sidebar">
+      <h4>Filter by:</h4>
+      <label><input type="checkbox"> Action</label>
+      <label><input type="checkbox"> Comedy</label>
+      <label><input type="checkbox"> Romance</label>
+      <label><input type="checkbox"> Animated</label>
+      <label><input type="checkbox"> For kids</label>
+    </aside>
+
+    <section class="favorites-grid" id="favoritesContainer">
+      <p>Cargando favoritos...</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 MovieCatalog. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Inicia sesión primero.");
+      window.location.href = "login.html";
+    }
+
+    fetch(`http://localhost:3000/api/favoritos/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("favoritesContainer");
+        container.innerHTML = '';
+
+        if (!data.length) {
+          container.innerHTML = '<p>No tienes películas favoritas aún.</p>';
+          return;
+        }
+
+        data.forEach(peli => {
+          const card = document.createElement("div");
+          card.className = "movie-card";
+          card.innerHTML = `
+            <img src="placeholder.png" alt="${peli.titulo}">
+            <h3>${peli.titulo}</h3>
+            <p>${peli.year}</p>
+          `;
+          container.appendChild(card);
+        });
+      });
+  </script>
+</body>
+</html>

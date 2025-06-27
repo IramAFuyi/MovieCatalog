@@ -1,0 +1,135 @@
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+      background-color: #d4ecff;
+  }
+  /* Navbar */
+  .navbar {
+    background-color: #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 25px;
+  }
+  
+  .logo {
+    width: 60px;
+  }
+  
+  .nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+  }
+  
+  .logout-btn {
+    background-color: #668fff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  /* Main layout */
+  .main-content {
+    display: flex;
+    padding: 20px;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background-color: #e3f2fd;
+    padding: 25px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .sidebar h4 {
+    margin-bottom: 20px;
+    color: #1a237e;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  
+  .sidebar label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 14px;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .sidebar label:hover {
+    color: #0d47a1;
+  }
+  
+  .sidebar input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1976d2;
+    border-radius: 6px;
+    transition: 0.2s;
+  }
+  
+  
+  /* Favorites grid */
+  .favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    flex-grow: 1;
+  }
+  
+  .movie-card {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  }
+  
+  .movie-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    background-color: #ddd;
+  }
+  
+  .movie-card h3 {
+    margin: 5px 0;
+  }
+  
+  .movie-card p {
+    font-size: 13px;
+    color: #555;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #e0e0e0;
+    text-align: center;
+    padding: 15px;
+    font-size: 13px;
+    color: #333;
+    border-top: 1px solid #ccc;
+  }
+  
+  main {
+    flex: 1;
+  }
+  

@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url("login-bg.jpg"); /* o el fondo de cine que generaste */
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(220, 220, 220, 0.5);
+  }
+  
+  .login-box {
+    background-color: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 300px;
+  }
+  
+  .login-box h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .login-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    background-color: #e0dfe1;
+    font-size: 14px;
+  }
+  
+  .login-box button {
+    width: 60%;
+    padding: 10px;
+    background: linear-gradient(to right, #ffffff, #aaa);
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    font-style: italic;
+    cursor: pointer;
+  }
+  

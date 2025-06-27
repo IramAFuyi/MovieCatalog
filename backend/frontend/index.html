@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Catalog</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <img src="logo.png" alt="Logo" class="logo">
+    <nav class="nav">
+        <a href="index.html"><i class="fas fa-house"></i> Home</a>
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="favorites.html"><i class="fas fa-heart"></i> Favorites</a>
+      </nav>      
+    <div id="session-btn-container"></div>
+  </header>
+
+  <!-- Search bar -->
+  <section class="search-section">
+    <input type="text" id="searchInput" placeholder="Search a movie...">
+    <button onclick="searchMovie()">Enter</button>
+  </section>
+
+  <!-- Layout principal -->
+  <main class="main-content">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h4>Filter by:</h4>
+      <label><input type="checkbox"> Action</label>
+      <label><input type="checkbox"> Romance</label>
+      <label><input type="checkbox"> Comedy</label>
+      <label><input type="checkbox"> Animated</label>
+      <label><input type="checkbox"> For kids</label>
+    </aside>
+
+    <!-- Resultados -->
+    <section class="results" id="results">
+      <div class="movie-card" data-title="Inception" data-year="2010">
+        <img src="placeholder.png" alt="Inception">
+        <div class="info">
+          <h3>Inception</h3>
+          <p><strong>Year:</strong> 2010</p>
+          <p>Película de ciencia ficción dirigida por Christopher Nolan.</p>
+        </div>
+        <button class="heart-btn" onclick="toggleFavorite(this, 'Inception', '2010')">♡</button>
+      </div>
+
+      <div class="movie-card" data-title="Shrek" data-year="2001">
+        <img src="placeholder.png" alt="Shrek">
+        <div class="info">
+          <h3>Shrek</h3>
+          <p><strong>Year:</strong> 2001</p>
+          <p>Película animada sobre un ogro muy carismático.</p>
+        </div>
+        <button class="heart-btn" onclick="toggleFavorite(this, 'Shrek', '2001')">♡</button>
+      </div>
+
+    </section>
+
+  </main>
+  <div id="pagination" class="pagination"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 MovieCatalog. All rights reserved.</p>
+      <p class="disclaimer">Información de películas obtenida a través de la API pública de <strong>OMDb (IMDb)</strong>.</p>
+    </div>
+  </footer>
+  
+
+  <!-- Script -->
+  <script>
+    const apiKey = "f766b691"; // ✅ Tu clave OMDb
+    const userId = localStorage.getItem("userId");
+  
+    // Botón de sesión
+    const sessionContainer = document.getElementById("session-btn-container");
+    if (userId) {
+      sessionContainer.innerHTML = `
+        <button class="login-btn" onclick="localStorage.clear(); window.location.href='login.html'">Logout</button>
+      `;
+    } else {
+      sessionContainer.innerHTML = `
+        <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
+        <button class="login-btn" style="margin-left: 10px;" onclick="window.location.href='register.html'">Register</button>
+      `;
+    }
+  
+    async function toggleFavorite(button, titulo, year) {
+      if (!userId) {
+        alert("Inicia sesión para guardar favoritos");
+        return;
+      }
+  
+      const isFavorited = button.classList.contains("favorited");
+  
+      const res = await fetch("http://localhost:3000/api/favoritos", {
+        method: isFavorited ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, titulo, year })
+      });
+  
+      if (res.ok) {
+        button.classList.toggle("favorited");
+        button.textContent = isFavorited ? "♡" : "❤️";
+      }
+    }
+  
+    async function precargarFavoritos() {
+      if (!userId) return;
+      const res = await fetch(`http://localhost:3000/api/favoritos/${userId}`);
+      const favoritos = await res.json();
+  
+      document.querySelectorAll(".movie-card").forEach(card => {
+        const titulo = card.dataset.title;
+        const button = card.querySelector(".heart-btn");
+        if (favoritos.some(f => f.titulo === titulo)) {
+          button.classList.add("favorited");
+          button.textContent = "❤️";
+        }
+      });
+    }
+  
+    // Buscar manualmente
+    async function searchMovie() {
+      const query = document.getElementById("searchInput").value;
+      if (!query) return;
+      currentQuery = query;
+      currentPage = 1;
+      searchFromOMDb(currentQuery, currentPage);
+    }
+  
+    // Buscar por letra aleatoria al inicio
+    const results = document.getElementById("results");
+    const pagination = document.getElementById("pagination");
+    let currentPage = 1;
+    let currentQuery = getRandomQuery();
+  
+    function getRandomQuery() {
+        const queries = [
+          "love", "war", "night", "life", "king", "girl", "man", "dark", "game", "city",
+          "dream", "world", "ghost", "death", "alien"
+        ];
+        return queries[Math.floor(Math.random() * queries.length)];
+      }
+      
+  
+    async function searchFromOMDb(query, page) {
+      const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}&type=movie&page=${page}`;
+      const res = await fetch(url);
+      const data = await res.json();
+  
+      results.innerHTML = "";
+      pagination.innerHTML = "";
+  
+      if (data.Response === "False") {
+        results.innerHTML = `<p>No se encontraron resultados para "${query}".</p>`;
+        return;
+      }
+  
+      data.Search.slice(0, 4).forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        card.dataset.title = movie.Title;
+        card.dataset.year = movie.Year;
+        card.innerHTML = `
+          <img src="${movie.Poster !== "N/A" ? movie.Poster : "placeholder.png"}" alt="${movie.Title}">
+          <div class="info">
+            <h3>${movie.Title}</h3>
+            <p><strong>Year:</strong> ${movie.Year}</p>
+            <p>${movie.Type === "series" ? "Serie" : "Película"} de IMDb.</p>
+          </div>
+          <button class="heart-btn" onclick="toggleFavorite(this, '${movie.Title}', '${movie.Year}')">♡</button>
+        `;
+        results.appendChild(card);
+      });
+  
+      precargarFavoritos();
+  
+      // Total de páginas aproximado
+      const totalPages = Math.ceil(parseInt(data.totalResults || 30) / 4);
+      for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = i === page ? "active-page" : "";
+        btn.onclick = () => {
+          currentPage = i;
+          searchFromOMDb(currentQuery, currentPage);
+        };
+        pagination.appendChild(btn);
+      }
+      
+    }
+  
+    window.addEventListener("DOMContentLoaded", () => {
+      searchFromOMDb(currentQuery, currentPage);
+    });
+  </script>
+  
+</body>
+</html>
