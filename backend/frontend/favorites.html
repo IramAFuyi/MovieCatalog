@@ -4,67 +4,130 @@
   <meta charset="UTF-8">
   <title>My Favorites</title>
   <link rel="stylesheet" href="favorites.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
+  <!-- Navbar -->
   <header class="navbar">
     <img src="logo.png" alt="Logo" class="logo">
     <nav class="nav">
-      <a href="index.html">Home</a>
-      <a href="profile.html">My Profile</a>
-      <a href="favorites.html">My Favorites</a>
+      <a href="index.html"><i class="fas fa-house"></i> Home</a>
+      <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+      <a href="favorites.html"><i class="fas fa-heart"></i> Favorites</a>
     </nav>
-    <button class="logout-btn" onclick="localStorage.clear(); window.location.href='login.html';">Logout</button>
+    <div id="session-btn-container"></div>
   </header>
 
   <main class="main-content">
+    <!-- Sidebar con filtros -->
     <aside class="sidebar">
       <h4>Filter by:</h4>
-      <label><input type="checkbox"> Action</label>
-      <label><input type="checkbox"> Comedy</label>
-      <label><input type="checkbox"> Romance</label>
-      <label><input type="checkbox"> Animated</label>
-      <label><input type="checkbox"> For kids</label>
+      <label><input type="checkbox" class="genre-filter" value="Action"> Action</label>
+      <label><input type="checkbox" class="genre-filter" value="Romance"> Romance</label>
+      <label><input type="checkbox" class="genre-filter" value="Comedy"> Comedy</label>
+      <label><input type="checkbox" class="genre-filter" value="Animation"> Animated</label>
+      <label><input type="checkbox" class="genre-filter" value="Family"> For kids</label>
     </aside>
 
-    <section class="favorites-grid" id="favoritesContainer">
-      <p>Cargando favoritos...</p>
-    </section>
+    <!-- Resultados -->
+    <section class="results" id="results"></section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 MovieCatalog. All rights reserved.</p>
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 MovieCatalog. All rights reserved.</p>
+      <p class="disclaimer">Información de películas obtenida a través de la API pública de <strong>OMDb (IMDb)</strong>.</p>
+    </div>
   </footer>
 
   <script>
+    const apiKey = "f766b691";
     const userId = localStorage.getItem("userId");
-    if (!userId) {
-      alert("Inicia sesión primero.");
-      window.location.href = "login.html";
+    const results = document.getElementById("results");
+
+    const sessionContainer = document.getElementById("session-btn-container");
+    if (userId) {
+      sessionContainer.innerHTML = '<button class="login-btn" onclick="localStorage.clear(); window.location.href=\'login.html\'">Logout</button>';
+    } else {
+      sessionContainer.innerHTML = '<button class="login-btn" onclick="window.location.href=\'login.html\'">Login</button>';
     }
 
-    fetch(`http://localhost:3000/api/favoritos/${userId}`)
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById("favoritesContainer");
-        container.innerHTML = '';
-
-        if (!data.length) {
-          container.innerHTML = '<p>No tienes películas favoritas aún.</p>';
-          return;
-        }
-
-        data.forEach(peli => {
-          const card = document.createElement("div");
-          card.className = "movie-card";
-          card.innerHTML = `
-            <img src="placeholder.png" alt="${peli.titulo}">
-            <h3>${peli.titulo}</h3>
-            <p>${peli.year}</p>
-          `;
-          container.appendChild(card);
-        });
+    function getSelectedGenres() {
+      return Array.from(document.querySelectorAll('.genre-filter:checked')).map(cb => cb.value);
+    }
+    
+    async function eliminarFavorito(titulo) {
+      const res = await fetch("http://localhost:3000/api/favoritos", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, titulo })
       });
+    
+      if (res.ok) {
+        alert(`'${titulo}' fue eliminado de tus favoritos.`);
+        cargarFavoritos(); // recarga la vista
+      }
+    }
+    
+    async function getMovieDetails(imdbID) {
+      const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}`);
+      const data = await res.json();
+      return data;
+    }
+
+    async function cargarFavoritos() {
+      results.innerHTML = "";
+
+      if (!userId) {
+        results.innerHTML = "<p style='text-align:center;'>Debes iniciar sesión para ver tus favoritos.</p>";
+        return;
+      }
+
+      const res = await fetch(`http://localhost:3000/api/favoritos/${userId}`);
+      const favoritos = await res.json();
+      if (!favoritos.length) {
+        results.innerHTML = "<p style='text-align:center;'>No tienes películas favoritas guardadas.</p>";
+        return;
+      }
+
+      const filtros = getSelectedGenres();
+
+      for (const fav of favoritos) {
+        const omdbRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&t=${encodeURIComponent(fav.titulo)}&y=${fav.year}`);
+        const data = await omdbRes.json();
+        if (data.Response === "False") continue;
+
+        const genres = data.Genre ? data.Genre.split(",").map(g => g.trim()) : [];
+        const mostrar = filtros.length === 0 || filtros.some(f => genres.includes(f));
+        if (!mostrar) continue;
+
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        card.dataset.title = data.Title;
+        card.dataset.year = data.Year;
+        card.innerHTML = `
+  <img src="${data.Poster !== "N/A" ? data.Poster : "placeholder.png"}" alt="${data.Title}">
+  <div class="info">
+    <h3>${data.Title}</h3>
+    <p><strong>Year:</strong> ${data.Year}</p>
+    <p><strong>Genres:</strong> ${data.Genre}</p>
+    <p><strong>Plot:</strong> ${data.Plot !== "N/A" ? data.Plot : "No description available."}</p>
+    <button class="heart-btn favorited" onclick="eliminarFavorito('${data.Title}')">❤️</button>
+  </div>
+`;
+
+        results.appendChild(card);
+      }
+    }
+
+    document.querySelectorAll('.genre-filter').forEach(cb => {
+      cb.addEventListener("change", cargarFavoritos);
+    });
+
+    window.addEventListener("DOMContentLoaded", cargarFavoritos);
   </script>
+
 </body>
 </html>
+

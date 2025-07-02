@@ -1,49 +1,56 @@
-html, body {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    font-family: Arial, sans-serif;
-      background-color: #d4ecff;
-  }
-  /* Navbar */
-  .navbar {
-    background-color: #eaeaea;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 25px;
-  }
+body {
   
-  .logo {
-    width: 60px;
-  }
-  
-  .nav a {
-    margin: 0 15px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: hsl(207, 100%, 92%);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #eaeaea;
+  padding: 10px 25px;
+}
+
+.navbar .logo {
+  height: 97px;
+}
+
+.nav a {
+  margin: 0 15px;
     text-decoration: none;
     color: black;
     font-weight: bold;
-  }
-  
-  .logout-btn {
-    background-color: #668fff;
+}
+.nav a i {
+  margin-right: 8px;
+  color: #333;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.login-btn {
+  background-color: #668fff;
     color: white;
     border: none;
     padding: 8px 15px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-  }
-  
-  /* Main layout */
-  .main-content {
-    display: flex;
-    padding: 20px;
-  }
-  
-  /* Sidebar */
-  .sidebar {
-    width: 240px;
+}
+
+.main-content {
+  display: flex;
+  padding: 24px;
+  flex: 1;
+}
+
+/* Sidebar (filtros) */
+.sidebar {
+  width: 240px;
     background-color: #e3f2fd;
     padding: 25px 20px;
     border-radius: 16px;
@@ -53,83 +60,117 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-  }
-  
-  .sidebar h4 {
-    margin-bottom: 20px;
+}
+
+.sidebar h4 {
+  margin-bottom: 20px;
     color: #1a237e;
-    font-size: 16px;
+    font-size: 29px;
     font-weight: 600;
     text-transform: uppercase;
-  }
-  
-  .sidebar label {
-    display: flex;
+}
+
+.sidebar label {
+  display: flex;
     align-items: center;
     margin-bottom: 14px;
-    font-size: 14px;
+    font-size: 23px;
     gap: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
-  }
-  
-  .sidebar label:hover {
-    color: #0d47a1;
-  }
-  
-  .sidebar input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #1976d2;
-    border-radius: 6px;
-    transition: 0.2s;
-  }
-  
-  
-  /* Favorites grid */
-  .favorites-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    flex-grow: 1;
-  }
-  
-  .movie-card {
-    background-color: white;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  }
-  
-  .movie-card img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-bottom: 10px;
-    background-color: #ddd;
-  }
-  
-  .movie-card h3 {
-    margin: 5px 0;
-  }
-  
-  .movie-card p {
-    font-size: 13px;
-    color: #555;
-  }
-  
-  /* Footer */
-  footer {
-    background-color: #e0e0e0;
-    text-align: center;
-    padding: 15px;
-    font-size: 13px;
-    color: #333;
-    border-top: 1px solid #ccc;
-  }
-  
-  main {
-    flex: 1;
-  }
-  
+}
+
+.sidebar input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.2);
+}
+
+/* Resultados */
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  flex: 1;
+}
+
+/* Tarjeta de película */
+.movie-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-card:hover {
+  transform: scale(1.02);
+}
+
+.movie-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.movie-card .info {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.movie-card .info h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #0d47a1;
+}
+
+.movie-card .info p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #444;
+}
+
+/* Footer */
+.footer {
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 14px;
+  font-size: 14px;
+  color: #555;
+  margin-top: auto;
+}
+
+.disclaimer {
+  font-size: 13px;
+  color: #777;
+}
+
+.main-content {
+  display: flex;
+  gap: 30px;
+  padding-top: 30px;
+  padding-right: 30px;
+  padding-bottom: 0px;
+  padding-left: 30px;
+  flex: 1;
+}
+
+.heart-btn {
+  margin-top: 10px;
+  font-size: 20px;
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: transform 0.2s ease;
+}
+
+.heart-btn:hover {
+  transform: scale(1.2);
+}

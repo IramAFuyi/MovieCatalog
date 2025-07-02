@@ -85,3 +85,52 @@ html, body {
     flex: 1;
   }
   
+  #imageInput {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  
+  .profile-container {
+    text-align: center;
+    padding: 40px;
+    background-color: #dceeff;
+    min-height: 80vh;
+  }
+  
+  .profile-pic {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #999;
+  }
+  
+  #imageInput {
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .profile-info {
+    max-width: 320px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  
+  .profile-info label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  
+  .profile-info input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+  }
+  

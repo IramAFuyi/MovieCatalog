@@ -20,7 +20,9 @@
 
   <!-- Perfil -->
   <main class="profile-container">
-    <img src="user-icon.png" alt="User" class="profile-pic">
+    <img id="profileImage" src="user-icon.png" alt="User" class="profile-pic">
+    <br>
+    <input type="file" id="imageInput" accept="image/*">
     <h2>¡Bienvenido!</h2>
 
     <div class="profile-info">
@@ -45,5 +47,30 @@
       document.getElementById("email").value = email;
     }
   </script>
+  <script>
+    const profileImage = document.getElementById("profileImage");
+    const imageInput = document.getElementById("imageInput");
+  
+    // Mostrar imagen guardada en localStorage
+    const savedImage = localStorage.getItem("profilePic");
+    if (savedImage) {
+      profileImage.src = savedImage;
+    }
+  
+    // Escuchar cambios en el input
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imageData = e.target.result;
+        localStorage.setItem("profilePic", imageData);
+        profileImage.src = imageData;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+  
 </body>
 </html>

@@ -29,13 +29,14 @@
   <main class="main-content">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h4>Filter by:</h4>
-      <label><input type="checkbox"> Action</label>
-      <label><input type="checkbox"> Romance</label>
-      <label><input type="checkbox"> Comedy</label>
-      <label><input type="checkbox"> Animated</label>
-      <label><input type="checkbox"> For kids</label>
-    </aside>
+        <h4>Filter by:</h4>
+        <label><input type="checkbox" class="genre-filter" value="Action"> Action</label>
+        <label><input type="checkbox" class="genre-filter" value="Romance"> Romance</label>
+        <label><input type="checkbox" class="genre-filter" value="Comedy"> Comedy</label>
+        <label><input type="checkbox" class="genre-filter" value="Animation"> Animated</label>
+        <label><input type="checkbox" class="genre-filter" value="Family"> For kids</label>
+      </aside>
+      
 
     <!-- Resultados -->
     <section class="results" id="results">
@@ -163,23 +164,36 @@
         return;
       }
   
-      data.Search.slice(0, 4).forEach(movie => {
-        const card = document.createElement("div");
-        card.className = "movie-card";
-        card.dataset.title = movie.Title;
-        card.dataset.year = movie.Year;
-        card.innerHTML = `
-          <img src="${movie.Poster !== "N/A" ? movie.Poster : "placeholder.png"}" alt="${movie.Title}">
-          <div class="info">
-            <h3>${movie.Title}</h3>
-            <p><strong>Year:</strong> ${movie.Year}</p>
-            <p>${movie.Type === "series" ? "Serie" : "Película"} de IMDb.</p>
-          </div>
-          <button class="heart-btn" onclick="toggleFavorite(this, '${movie.Title}', '${movie.Year}')">♡</button>
-        `;
-        results.appendChild(card);
-      });
-  
+      const selectedGenres = getSelectedGenres();
+
+for (const movie of data.Search) {
+  const details = await getMovieDetails(movie.imdbID);
+  const genres = details.Genre ? details.Genre.split(",").map(g => g.trim()) : [];
+
+  // Si no hay filtros, mostrar todo
+  const shouldShow = selectedGenres.length === 0 || selectedGenres.some(g => genres.includes(g));
+  if (!shouldShow) continue;
+
+  const card = document.createElement("div");
+  card.className = "movie-card";
+  card.dataset.title = movie.Title;
+  card.dataset.year = movie.Year;
+
+  card.innerHTML = `
+    <img src="${movie.Poster !== "N/A" ? movie.Poster : "placeholder.png"}" alt="${movie.Title}">
+    <div class="info">
+      <h3>${movie.Title}</h3>
+      <p><strong>Year:</strong> ${movie.Year}</p>
+      <p>${details.Genre}</p>
+      <p><strong>Plot:</strong> ${details.Plot !== "N/A" ? details.Plot : "No description available."}</p>
+
+    </div>
+    <button class="heart-btn" onclick="toggleFavorite(this, '${movie.Title}', '${movie.Year}')">♡</button>
+  `;
+
+  results.appendChild(card);
+}
+
       precargarFavoritos();
   
       // Total de páginas aproximado
@@ -196,10 +210,26 @@
       }
       
     }
-  
+    function getSelectedGenres() {
+        return Array.from(document.querySelectorAll('.genre-filter:checked')).map(cb => cb.value);
+      }
+      
+      async function getMovieDetails(imdbID) {
+        const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}`);
+        const data = await res.json();
+        return data;
+      }
+      
     window.addEventListener("DOMContentLoaded", () => {
       searchFromOMDb(currentQuery, currentPage);
     });
+    document.querySelectorAll('.genre-filter').forEach(cb => {
+        cb.addEventListener("change", () => {
+          currentPage = 1;
+          searchFromOMDb(currentQuery, currentPage);
+        });
+      });
+      
   </script>
   
 </body>
